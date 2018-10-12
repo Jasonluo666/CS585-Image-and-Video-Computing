@@ -1,0 +1,218 @@
+
+<html>
+	<head>
+		<title> CS585 Homework 2 Jiangshan Luo  </title>
+		<style>
+			table {
+			   border: 1px solid black;
+			}
+			
+			td {
+				height: 50px;
+				vertical-align: middle;
+				width: 20%;
+				text-align: center;
+			}
+		</style>
+	</head>
+
+	<body>
+		<center>
+		<a href="http://www.bu.edu"><img border="0" src="http://www.cs.bu.edu/fac/betke/images/bu-logo.gif"
+		width="119" height="120"></a>
+		</center>
+
+		<h1>HW2 Programming Assignment</h1>
+		<p> 
+		 CS 585 HW 2 <br>
+		 Jiangshan Luo <br>
+		 Sep 25, 2018
+		</p>
+
+		<hr/>
+		<h2>The experiment is completed in Python and the Jupyter Notebook is provided in both 
+		<a href="./HW2_Python/HW2_JiangshanLuo.ipynb"> ipynb </a>
+		and 
+		<a href="./HW2_Python/HW2_JiangshanLuo.html"> html </a>
+		format.</h2>
+		
+		<div class="main-body">
+		<hr>
+		<h2> Problem Definition </h2>
+		<p>
+		The main purpose of this assignment is to analyze the images in the provided data set. More precisely, the tasks are:<br/><br/>
+		<b>For Each Image in the Data Set</b>
+		</p>
+
+		<ol>
+			<li> Determine the background of the image. </li>
+			<li> Find and label shape blobs according to their colors. </li>
+			<li> Implement the boundary following algorithm and find the contours of blobs. </li>
+			<li> Compare the implemented algorithm with findContours provided by openCV. </li>
+			<li> Classify the boundary pixels into three categories: against background, against another blob, against the image boundary. </li>
+			<li> Design an algorithm to recognize blobs' shapes: square, circle, triangle. </li>
+			<li> Evaluation the effectiveness of the recognition algorithm by using the annotation data set. </li>
+		</ol>
+
+		<hr>
+		<h2> Method and Implementation </h2>
+
+		<p>For the entire experiment, I will convert RGB color images into the grayscale ones and use them for computing because it's easier to handle 1-channel image than deal with the 3-channel image.	</p>
+		  
+		<b> 1. Determine the background of the image </b>
+		<p>
+			To determine the region of the background, I need to figure out the background color in the first place. I collect the pixels on the image boundary and choose the major pixel color as a background color because the blobs rarely cover most of the image boundary in the provided data set. Then, I got the image background region. <br/><br/>
+			
+			One problem that I met is that there are noises appearing in the image where the pixel color is similar, but there are tiny little differences in the color value. This makes it hard for the computer to select the entire background area. To fix this, I used the denoising function provided by OpenCV called medianBlur, which blur the image and overwrite the small noise pixel regions with the majority of color values that surround them. Finally, I can select the entire background region and set it to zero.
+		</p>
+
+		<b> 2. Find and label shape blobs according to their colors </b>
+		<p>
+			The major difficulty I met for this part is that the pixel near the blobs' boundaries is sometimes not the same color is the blobs' themselves, and the computer will grab the image with part of the surrounding boundary pixels as well, which makes the contours of them very rough. To solve this, I calculated the frequency of the colors in the image and picked those with the reasonable frequency. The reason why I did that is that the majority color of the blobs is inside the blobs instead of the pixels surrounding them. So by doing that, I can drop most of the unexpected pixels on the blobs' boundaries. <br/><br/>
+			
+			For the labeling part, each color value picked previously represents one of the blobs in the image, and I can use these values to find the regions of those blobs easily. (the blob colors are unique). Additionally, I checked the size of each region as well and ignore the small size regions since there are some separated pieces that shouldn't be counted as a blob.
+		</p>
+
+		<b> 3. Implement the boundary following algorithm and find the contours of blobs </b>
+		<p>
+			For this part, I used the boundary following algorithm taught in the lecture and it produces the contours perfectly. Some information of the algorithm: <br/><br/>
+			
+			find the starting point c (first pixel in the blob) -> find the N4 neighbor at the left of c named b -> start at b, go clockwise and find the next pixel in the blob -> update c, b -> repeat until finish detecting the contour
+		</p>
+
+		<b> 4. Compare the implemented algorithm with findContours provided by openCV </b>
+		<p>
+			I used the cv2.findContours() and save the result in the image file (jpeg format). The cv2.findContours() works well with some of the images. However, the cv2.findContours() usually includes the contours of some small pieces inside the blobs as well, which is unnecessary for this assignment. 
+		</p>
+
+		<b> 5. Classify the boundary pixels into three categories: against background, against another blob, against the image boundary </b>
+		<p>
+			It's easy to classify the pixels on the image boundary since I only need to check the index/position of them. For the contours that against another blob, however, it's harder since there are several conditions that should be considered. So, instead of doing that, I classify those against the background first. The filter condition I used is that: if the pixel gets a background color neighbor and that neighbor is part of the real background (with large region size), it belongs to the category that against the background. Finally, those that are left should belong to the category that against another blob. 
+		</p>
+
+		<b> 6. Design an algorithm to recognize blobs' shapes: square, circle, triangle </b>
+		<p>
+			There are some difficulties I met in this part, and the final implementation is quite different from the plan that I have. Here are several attempts that I tried but abandoned because of some specific problems: <br/><br/>
+			
+			<ul>
+				<li> calculate the circularity/convexity/compactness of the blobs </li>
+				Problem: the blobs are usually part of the perfect shape since there are lots of overlaps. No matter if it's a circle or a triangle, the circularity/convexity/compactness of it can be significantly different from the value of the perfect shape's. Even the centroid of the blobs can be outside the blobs themselves. Making the prediction based on this might be careless.
+				<li> use the angles/degrees of the contours to classify the shapes </li>
+				Problem: the contours of the blobs that detected are not smooth, and there are many unexpected concaves and convexes on the blobs' contours, which makes it difficult to find the slope of the edges and calculate the degrees among them.
+			</ul>
+			
+			The final method I used is based on the original edges of the blobs (those against the background) since they are not influenced by other blobs and the image margin. Firstly, I used the function cv2.approxPolyDP to approximate the angles that one blob can have based on the remain pieces of contours. If the shape is a circle, the angles can be close to infinite even there is only part of the edge provided. Secondly, cv2.matchShapes was used with the samples of triangle and square templates. By doing this, I want to figure out the similarity of the contours to these two shapes. Even though the errors can be considered big since there is only part of the contours and the boundaries are rough, I can still compare the similarity between these two errors. <br/><br/>
+			
+			Both of these two measurements work well on the circle-like blobs in most cases since the similarity errors are significant for those blobs as well. However, it's still hard to determine whether a blob is a triangle or a square since most of the attributes of them are similar and the measurement of angles/degrees is difficult to implement. Assume we have more advanced contour detection or error-tolerant recognition method; the performance could be improved considerably.
+		</p>
+
+		<b> 7. Evaluation the effectiveness of the recognition algorithm by using the annotation data set </b>
+		<p>
+			In this part, I used the concept of the confusion matrix and computed the Precision on my prediction results. The formula is: Precision = (TP / TP + FP) <br/><br/>
+			
+			In terms of extracting the information from the annotation files, the program grabs the relevant annotation images for the evaluation and pair the blobs that correspond with the one I got previously by checking if the pixels are paired in the same position of the image. Then, it checks if the annotation is the same as the prediction. Finally, it saves the result in a dictionary object and stores it in a txt file named Overall_Evaluation.txt.
+		</p>
+
+		<p>
+		Briefly outline the functions you created in your code to carry out the
+		algorithmic steps you described earlier.
+		</p>
+
+		<hr>
+		<h2>Experiments</h2>
+		<p>
+			The experiment is completed in Python and the Jupyter Notebook is provided in both 
+			<a href="./HW2_Python/HW2_JiangshanLuo.ipynb"> ipynb </a>
+			and 
+			<a href="./HW2_Python/HW2_JiangshanLuo.html"> html </a>
+			format.
+		</p>
+		<p>
+
+
+		<hr>
+		<h2> Results</h2>
+		<p>
+			Since there are too many trials done, I only present one of the valuable trial below.
+		</p>
+
+		<p>
+		<table>
+		<caption><h3>Result of Trial 1027</h3></caption>
+
+		<tr>
+		<th> Original Image </th>
+		</tr>
+		<tr>
+		  <th> <img src="./HW2_Python/shapes_dataset/shapes_train2018/1027.jpeg"> </th> 
+		</tr>
+		 
+		<tr>
+		<th> Image without Background </th>
+		<th> Denoising Image </th>
+		</tr>
+		<tr>
+		  <td> <img src="./HW2_Python/output/1027/img_withoutBG.jpeg"> </th> 
+		  <td> <img src="./HW2_Python/output/1027/img_noNoise.jpeg"> </th>
+		</tr> 
+
+		<tr>
+		<th> Boundary Following Algorithm </th>
+		<th> openCV drawContours </th>
+		<th> Classified Contours </th>
+		</tr>
+		<tr>
+		  <th> <img src="./HW2_Python/output/1027/boundary_following.jpeg"> </th> 
+		  <th> <img src="./HW2_Python/output/1027/opencv_drawContours_result.jpeg"> </th>
+		  <th> <img src="./HW2_Python/output/1027/merged_classified_contour.jpeg"> </th> 
+		</tr>
+
+		<tr>
+		<th> Detected Blob 1 </th>
+		<th> Detected Blob 2 </th>
+		<th> Detected Blob 3 </th>
+		<th> Detected Blob 4 </th>
+		</tr>
+		<tr>
+		  <td> <img src="./HW2_Python/output/1027/blob_1.jpeg"> </td> 
+		  <td> <img src="./HW2_Python/output/1027/blob_2.jpeg"> </td>
+		  <td> <img src="./HW2_Python/output/1027/blob_3.jpeg"> </td> 
+		  <td> <img src="./HW2_Python/output/1027/blob_4.jpeg"> </td>
+		</tr> 
+		</table>
+		</p>
+
+
+
+		<hr>
+		<h2> Discussion </h2>
+
+		<p> 
+			Most of the functions in my program works well with the provided date set. However, there are some limitations:
+			<ul>
+				<li> If the color differences among blobs are small, it's hard for my solution to work effectively. </li>
+				<li> The program can handle the simply images, but there will be troubles when it occurs complex image (with many details and multi-channels). </li>
+				<li> The size of the image in the provided data set is fixed which is used in the program. However, there will be problems if we lose this advantage. </li>
+				<li> Better blob recognition algorithms are expected to be used to detect the contours with pixels that have differences in color values. </li>
+				<li> Machine Learning Method maybe adoptable for this experiment to improve the performance. </li>
+			</ul>
+		</p>
+
+		<hr>
+		<h2> Conclusions </h2>
+
+		<p>
+			My program effectively detected the background region, labeled every blob based on the color, accomplished the boundary following algorithm function and classified the boundaries. However, the shape recognition still needs to be improved, and some advanced methods should be used to replace the current ones even though now the program can successfully recognize some of the shapes.
+		</p>
+
+
+		<hr>
+		<h2> Credits and Bibliography </h2>
+		<p>
+			CS 585 Lab 2 Solution - Teaching Fellow Yifu Hu <br/><br/>
+			
+			openCV: <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html"> https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_tutorials.html </a>
+		</p>
+	</body>
+
+</html>

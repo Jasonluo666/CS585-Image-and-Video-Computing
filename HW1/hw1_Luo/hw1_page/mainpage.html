@@ -1,0 +1,123 @@
+<!Doctype html>
+
+<!--main page-->
+<html lang="en">
+<head>
+<title>My Web Page</title>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<!-- commenting test -->
+
+<body>
+	<div id="validation" style="float:left;">
+	  <p>
+		<a href="http://jigsaw.w3.org/css-validator/check/referer">
+		  <image style="border:0;width:88px;height:31px"
+			   src="http://jigsaw.w3.org/css-validator/images/vcss"
+			   alt="Valid CSS!" />
+		</a>
+	  </p>
+	</div>
+
+	<!--Facebook button-->
+	<iframe src="https://www.facebook.com/plugins/share_button.php?href=http%3A%2F%2Fpartch.anu.edu.au%2F~u6488845%2F&layout=button&size=large&mobile_iframe=true&width=74&height=28&appId" width="74" height="28" style="border:none;overflow:hidden; float:right;" scrolling="no" frameborder="0" allowTransparency="true" allow="encrypted-media"></iframe>
+
+	<!--clear the float for both sides-->
+	<div style="clear: left;"></div>
+	<div style="clear: right;"></div>
+
+	<h1>Jiangshan Luo's Personal Page</h1><hr/>
+
+	<!--navigation bar in the main page-->
+	<div id="introduction_contents">
+	  <ul>
+		<li><a href="#description">Assignment 1 Description</a></li>
+		<li><a href="#showcase">Showcase</a></li>
+		<li><a href="#source_code">Source Code</a></li>
+	  </ul>
+	</div>
+
+	<div id="introduction_page"  style="margin-left:12%; margin-top:20px;">
+	  <a id="description"></a>
+	  <h2>Assignment 1 Description</h2><hr>
+
+	  <p style="line-height:20px;">
+		The main purpose of the assignment 1 is to do some simple processing on the image of our face. The assignment page refers to <a href="http://www.dota2.com/play/">here</a>.
+	  </p>
+	  
+	  <ol>
+		<li>Convert the image into grayscale</li>
+		<li>Flip the image horizontally</li>
+		<li>add a blur effect on the image</li>
+	  </ol>
+	  
+	  
+	  <a id="showcase"></a>
+	  <h2>Showcase</h2><hr>
+
+	  <!-- Photo Grid -->
+	 <div class="row"> 
+	   <!--one column-->
+	   <div class="column">
+		 <!--each container class is a photo-->
+		 <div class="container">
+		   <image src="./Images/my_picture.jpg" class="image" style="width:100%">
+		   <div class="middle">
+	 		<a href="./Images/my_picture.jpg"><div class="text">
+	 		  <b>Original Image</b><br><br/>
+	 		  "This is the original image of my face which can be used to compare with the processed images."
+	 		  </div></a>
+ 		  </div>
+ 		</div>
+		
+		<div class="container">
+		   <image src="./Images/grayscale.jpg" class="image" style="width:100%">
+		   <div class="middle">
+	 		<a href="./Images/grayscale.jpg"><div class="text">
+	 		  <b>Grayscale Image</b><br><br/>
+	 		  "In order to creating a grayscale image of my face, I define a new image object which has only one color channel (original RGB image has three color channels). <br/><br/>
+			  Then, I used the formula: gray_channel_value = 0.3*R + 0.6*G + 0.1*B to generate the values for the grayscale image."
+	 		  </div></a>
+ 		  </div>
+ 		</div>
+ 	  </div>
+	  
+	  <div class="column">
+		 <!--each container class is a photo-->
+		 <div class="container">
+		   <image src="./Images/flipped.jpg" class="image" style="width:100%">
+		   <div class="middle">
+	 		<a href="./Images/flipped.jpg"><div class="text">
+	 		  <b>Flipped Image</b><br><br/>
+	 		  "This image is horizontal flip of the original image. The method I took is to reverse all the values in each row of the image matrix. More specifically, I used the pointers to achieve this: swap(row[index], row[column - index])"
+	 		  </div></a>
+ 		  </div>
+ 		</div>
+		
+		<div class="container">
+		   <image src="./Images/blurred.jpg" class="image" style="width:100%">
+		   <div class="middle">
+	 		<a href="./Images/blurred.jpg"><div class="text">
+	 		  <b>Blurred Image</b><br><br/>
+	 		  "The blurred image is created by using a simple algorithm:<br/>
+			  for every pixel, assign it with the average value of its neighbors (usually 8 neighbors).<br/><br/>
+			  
+			  After 10 times iterations, I got this blurred image."
+	 		  </div></a>
+ 		  </div>
+ 		</div>
+ 	  </div>
+
+	</div>
+
+
+	  <a id="source_code"></a>
+	  <h2>Source Code</h2><hr>
+	  
+	  <p>The source code could be found <a href="./source.cpp">here</a>.</p>
+	  
+</div>
+</body>
+</html>

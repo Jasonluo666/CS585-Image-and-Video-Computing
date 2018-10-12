@@ -1,0 +1,2 @@
+{'triangle_total': 1, 'triangle_true_predict': 1, 'square_total': 0, 'square_true_predict': 0, 'circle_total': 1, 'circle_true_predict': 0}
+precision:50.0%

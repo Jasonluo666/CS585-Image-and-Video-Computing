@@ -1,0 +1,85 @@
+/*this css file works for my personal website only*/
+
+body {
+  background-image: url("./Images/background.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center; 
+  color: white;
+  /*no margin -> for the navigation bar*/
+  margin: 0;
+  font-size: 20px;
+}
+
+/*overall_contents -> navigation bar*/
+#introduction_contents ul{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: gray;
+  /*will not move while scrolling*/
+  position: fixed;
+  height: 100%;
+  width: 10%;
+}
+
+/*introduction_contents -> navigation bar*/
+#introduction_contents a {
+  display: block;
+  color: white;
+  padding: 10px 10px;
+  text-decoration: none;
+}
+
+#introduction_contents a:hover {
+  background-color: black;
+}
+
+#about_navigation a {
+  text-decoration: none;
+  color: blue;
+  background-color: gray;
+}
+
+#about_navigation a:hover {
+  background-color: white;
+}
+
+/* 
+css for the photo caption
+Source: https://www.w3schools.com/css/css3_images.asp
+*/
+.container {
+  position: relative;
+}
+
+.middle {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%)
+}
+/*image opacity changes when mouse over it*/
+.container:hover .image {
+  opacity: 0.9;
+}
+
+.container:hover .middle {
+  opacity: 1;
+}
+
+.container a{
+  text-decoration:none;
+}
+
+/*text in the photo*/
+.text {
+  background-color: #cc7a00;
+  color: white;
+  font-size: 30px;
+  padding: 16px 32px;
+  text-align: center;
+}
